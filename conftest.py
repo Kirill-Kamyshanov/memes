@@ -1,37 +1,83 @@
 import pytest
 import requests
+
+from endpoints.get_meme_id import GetOneMemeById
 from endpoints.post_authorize import PostAuthorize
 from endpoints.get_authorize_token import CheckAuthorizeToken
 from endpoints.get_memes import GetAllMemes
+from endpoints.post_meme import PostAMeme
+from endpoints.put_meme_id import PutMemeById
 
 url = 'http://memesapi.course.qa-practice.com'
 headers = {'Content-Type': 'application/json'}
 user = {"name": "Wowa"}
 
 
+
+
+
+# фикстура в целом рабочая, но надо будет дооптимизировать потом
 @pytest.fixture(scope='session')
-def first_test_token():
-    response = requests.post(f'{url}/authorize', json=user, headers=headers)
-    auth_token = response.json()['token']
-    print(f'\nСгенерирован токен для тестовой сессии: {auth_token}')
-    return auth_token
+def check_token():
+    def first_test_token():
+        response = requests.post(f'{url}/authorize', json=user, headers=headers)
+        auth_token = response.json()['token']
+        print(f'\nСгенерирован токен для тестовой сессии: {auth_token}')
+        return auth_token
+
+    # токен введён вручную. подумать потом как с ним быть. можно эту строку убрать потом
+    token = "EcwZL4QkzSzkTrb"
 
 
-@pytest.fixture()
-def check_token(first_test_token):
-    response = requests.get(f'{url}/authorize/{first_test_token}')
+    # генерация токена для тестовой сессии
+    if not token:
+        token = first_test_token()
+
+
+    # проверка валидности тестового токена
+    response = requests.get(f'{url}/authorize/{token}')
     if response.status_code == 404:
-        print(f'Токен {first_test_token} устарел. Генерация нового токена...')
+        print(f'Токен {token} устарел. Генерация нового токена...')
         response = requests.post(f'{url}/authorize', json=user, headers=headers)
         print("Новый токен:", response.json()['token'])
         return response.json()['token']
-    print(f'\nТокен активен: {first_test_token}. Новая генерация не требуется')
-    return first_test_token
+    print(f'\nТокен активен: {token}. Новая генерация не требуется')
+    return token
 
 
 
 
 
+# Нужна только для GET one и PUT
+@pytest.fixture()
+def create_test_meme_then_delete(check_token):
+    body = {
+        "text": "description",
+        "url": "https://memes",
+        "tags": [
+            "first",
+            "second"
+        ],
+        "info": {
+            "additional info": "training mem"
+        }
+    }
+    headers = {'Content-Type': 'application/json', 'Authorization': f'{check_token}'}
+    # print('Создание тестового мема...')
+    meme_id = requests.post(f'{url}/meme', json=body, headers=headers).json()["id"]
+    print(f'Тестовый мем {meme_id} успешно создан')
+    yield meme_id
+    # print('Удаление тестового мема...')
+    requests.delete(f'{url}/meme/{meme_id}', headers=headers)
+    print(f'Тестовый мем {meme_id} успешно удалён')
+
+
+
+
+
+
+
+# фикстуры для создания экземпляров эндпойнтов
 
 @pytest.fixture()
 def post_authorize():
@@ -44,3 +90,17 @@ def get_authorize_token():
 @pytest.fixture()
 def get_memes():
     return GetAllMemes()
+
+@pytest.fixture()
+def get_meme_id():
+    return GetOneMemeById()
+
+
+@pytest.fixture()
+def post_meme():
+    return PostAMeme()
+
+
+@pytest.fixture()
+def put_meme_id():
+    return PutMemeById()
