@@ -5,10 +5,18 @@ class PostAuthorize(Endpoint):
     def generate_new_token(self, body, headers=None):
         headers = headers if headers else self.headers
         self.response = requests.post(f'{self.url}/authorize', json=body, headers=headers)
-        self.response_body = self.response.json()
         self.status_code = self.response.status_code
+        self.response_body = self.response.json()
         self.auth_token = self.response_body['token']
         self.user = self.response_body['user']
+
+    # Метод для негативных тестов
+    def try_generate_new_token(self, body, headers=None):
+        headers = headers if headers else self.headers
+        self.response = requests.post(f'{self.url}/authorize', json=body, headers=headers)
+        self.status_code = self.response.status_code
+        # print(self.response.text)
+        # self.response_body = self.response.text
 
         # отладка
         # print(self.response_body)

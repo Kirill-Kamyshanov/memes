@@ -20,6 +20,9 @@ class Endpoint:
     def check_that_status_code_is_400(self):
         assert self.status_code == 400, f'Status code is not 400: {self.status_code}'
 
+    def check_that_status_code_is_401(self):
+        assert self.status_code == 401, f'Status code is not 401: {self.status_code}'
+
     def check_that_status_code_is_404(self):
         assert self.status_code == 404, f'Status code is not 404: {self.status_code}'
 

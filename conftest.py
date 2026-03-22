@@ -7,6 +7,7 @@ from endpoints.get_authorize_token import CheckAuthorizeToken
 from endpoints.get_memes import GetAllMemes
 from endpoints.post_meme import PostAMeme
 from endpoints.put_meme_id import PutMemeById
+from endpoints.delete_meme_id import DeleteMeme
 
 url = 'http://memesapi.course.qa-practice.com'
 headers = {'Content-Type': 'application/json'}
@@ -65,7 +66,7 @@ def create_test_meme_then_delete(check_token):
     headers = {'Content-Type': 'application/json', 'Authorization': f'{check_token}'}
     # print('Создание тестового мема...')
     meme_id = requests.post(f'{url}/meme', json=body, headers=headers).json()["id"]
-    print(f'Тестовый мем {meme_id} успешно создан')
+    print(f'\nТестовый мем {meme_id} успешно создан')
     yield meme_id
     # print('Удаление тестового мема...')
     requests.delete(f'{url}/meme/{meme_id}', headers=headers)
@@ -104,3 +105,8 @@ def post_meme():
 @pytest.fixture()
 def put_meme_id():
     return PutMemeById()
+
+
+@pytest.fixture()
+def delete_meme_id():
+    return DeleteMeme()

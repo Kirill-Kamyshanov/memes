@@ -14,6 +14,17 @@ class GetAllMemes(Endpoint):
         print(self.status_code)
         print(self.response_body)
 
+
+    # Метод для негативных тестов
+    def try_get_all_memes(self, token):
+        self.auth_token = token
+        self.headers['Authorization'] = self.auth_token
+        self.response = requests.get(f'{self.url}/meme', headers=self.headers)
+        self.status_code = self.response.status_code
+        print(self.response.status_code)
+
+
+
     def check_response_structure(self):
         data = self.response_body["data"]
         assert data, "Data is missed"
