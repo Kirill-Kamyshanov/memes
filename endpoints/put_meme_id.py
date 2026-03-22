@@ -16,6 +16,20 @@ class PutMemeById(Endpoint):
         print(f'Обновлённые данные: {self.response_body}')
 
 
+    def try_put_meme_by_id(self, meme_id, token, body):
+        self.auth_token = token
+        self.meme_id = meme_id
+        self.headers['Authorization'] = self.auth_token
+        if meme_id:
+            body['id'] = meme_id
+        response = requests.put(f'{self.url}/meme/{meme_id}',json=body, headers=self.headers)
+        self.status_code = response.status_code
+        print(self.status_code)
+
+
+
+
+
     # Проверка того, что данные мема действительно обновились
     def check_updating_meme(self):
         self.response_body['id'] = int(self.response_body['id'])

@@ -10,8 +10,6 @@ from endpoints.put_meme_id import PutMemeById
 from endpoints.delete_meme_id import DeleteMeme
 
 url = 'http://memesapi.course.qa-practice.com'
-headers = {'Content-Type': 'application/json'}
-user = {"name": "Wowa"}
 
 
 
@@ -21,12 +19,15 @@ user = {"name": "Wowa"}
 @pytest.fixture(scope='session')
 def check_token():
     def first_test_token():
+        user = {"name": "Wowa"}
+        headers = {'Content-Type': 'application/json'}
         response = requests.post(f'{url}/authorize', json=user, headers=headers)
         auth_token = response.json()['token']
         print(f'\nСгенерирован токен для тестовой сессии: {auth_token}')
         return auth_token
 
-    # токен введён вручную. подумать потом как с ним быть. можно эту строку убрать потом
+    # Пока захардкожен валидный токен, чтобы не генерировать зря.
+    # При передаче пустой строки будет генерировать новый один раз в сессию
     token = "EcwZL4QkzSzkTrb"
 
 
@@ -39,9 +40,9 @@ def check_token():
     response = requests.get(f'{url}/authorize/{token}')
     if response.status_code == 404:
         print(f'Токен {token} устарел. Генерация нового токена...')
-        response = requests.post(f'{url}/authorize', json=user, headers=headers)
-        print("Новый токен:", response.json()['token'])
-        return response.json()['token']
+        token = first_test_token()
+        print("Новый токен:", token)
+        return token
     print(f'\nТокен активен: {token}. Новая генерация не требуется')
     return token
 
@@ -49,7 +50,7 @@ def check_token():
 
 
 
-# Нужна только для GET one и PUT
+# Используется только для GET (по id) и PUT
 @pytest.fixture()
 def create_test_meme_then_delete(check_token):
     body = {
@@ -64,11 +65,9 @@ def create_test_meme_then_delete(check_token):
         }
     }
     headers = {'Content-Type': 'application/json', 'Authorization': f'{check_token}'}
-    # print('Создание тестового мема...')
     meme_id = requests.post(f'{url}/meme', json=body, headers=headers).json()["id"]
     print(f'\nТестовый мем {meme_id} успешно создан')
     yield meme_id
-    # print('Удаление тестового мема...')
     requests.delete(f'{url}/meme/{meme_id}', headers=headers)
     print(f'Тестовый мем {meme_id} успешно удалён')
 
@@ -78,7 +77,7 @@ def create_test_meme_then_delete(check_token):
 
 
 
-# фикстуры для создания экземпляров эндпойнтов
+# фикстуры для создания экземпляров классов (эндпойнтов)
 
 @pytest.fixture()
 def post_authorize():

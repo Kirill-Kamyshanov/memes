@@ -17,8 +17,7 @@ class GetAllMemes(Endpoint):
 
     # Метод для негативных тестов
     def try_get_all_memes(self, token):
-        self.auth_token = token
-        self.headers['Authorization'] = self.auth_token
+        self.headers['Authorization'] = token
         self.response = requests.get(f'{self.url}/meme', headers=self.headers)
         self.status_code = self.response.status_code
         print(self.response.status_code)
