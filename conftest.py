@@ -12,10 +12,6 @@ from endpoints.delete_meme_id import DeleteMeme
 url = 'http://memesapi.course.qa-practice.com'
 
 
-
-
-
-# фикстура в целом рабочая, но надо будет дооптимизировать потом
 @pytest.fixture(scope='session')
 def check_token():
     def first_test_token():
@@ -30,11 +26,9 @@ def check_token():
     # При передаче пустой строки будет генерировать новый один раз в сессию
     token = "EcwZL4QkzSzkTrb"
 
-
-    # генерация токена для тестовой сессии
+    # генерация токена для тестовой сессии, если значение выше будет заменено на пустую строку
     if not token:
         token = first_test_token()
-
 
     # проверка валидности тестового токена
     response = requests.get(f'{url}/authorize/{token}')
@@ -45,9 +39,6 @@ def check_token():
         return token
     print(f'\nТокен активен: {token}. Новая генерация не требуется')
     return token
-
-
-
 
 
 # Используется только для GET (по id) и PUT
@@ -72,24 +63,22 @@ def create_test_meme_then_delete(check_token):
     print(f'Тестовый мем {meme_id} успешно удалён')
 
 
-
-
-
-
-
 # фикстуры для создания экземпляров классов (эндпойнтов)
 
 @pytest.fixture()
 def post_authorize():
     return PostAuthorize()
 
+
 @pytest.fixture()
 def get_authorize_token():
     return CheckAuthorizeToken()
 
+
 @pytest.fixture()
 def get_memes():
     return GetAllMemes()
+
 
 @pytest.fixture()
 def get_meme_id():

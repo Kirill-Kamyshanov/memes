@@ -1,35 +1,30 @@
-from endpoints.endpoint import Endpoint
 import requests
+import allure
+
+from endpoints.endpoint import Endpoint
+
 
 class GetAllMemes(Endpoint):
+    @allure.step('Sending request to get all memes')
     def get_all_memes(self, token):
-        self.auth_token = token
-        self.headers['Authorization'] = self.auth_token
-
+        self.headers['Authorization'] = token
         self.response = requests.get(f'{self.url}/meme', headers=self.headers)
         self.status_code = self.response.status_code
         self.response_body = self.response.json()
 
-        print(self.response)
-        print(self.status_code)
-        print(self.response_body)
-
-
     # Метод для негативных тестов
+    @allure.step('Trying to get all memes with invalid data')
     def try_get_all_memes(self, token):
         self.headers['Authorization'] = token
         self.response = requests.get(f'{self.url}/meme', headers=self.headers)
         self.status_code = self.response.status_code
-        print(self.response.status_code)
 
-
-
+    @allure.step('Checking response body structure')
     def check_response_structure(self):
         data = self.response_body["data"]
         assert data, "Data is missed"
         assert type(data) is list, "Data is not a list"
         for meme in data:
-            # проверка для каждого мема соответствует общей в род. классе
             assert type(meme) is dict, f"Meme {meme}is not a dict"
 
             assert 'id' in meme, "Missing 'id' field"
