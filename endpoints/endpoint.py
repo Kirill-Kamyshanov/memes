@@ -54,4 +54,13 @@ class Endpoint:
     # Проверка того, что id мема в ответе соответствует переданному meme_id
     @allure.step('Validate meme_id')
     def check_meme_id(self):
-        assert self.meme_id == self.response_body['id'], f'meme_id does not match {self.meme_id}'
+        assert self.meme_id == self.response_body['id'], f'meme_id does not match {type(self.meme_id)} {type(self.response_body)['id']}'
+
+    # Общий метод для POST и PUT
+    @allure.step('Checking response body data')
+    def check_response_data(self, body):
+        body['id'] = self.meme_id
+        body['updated_by'] = self.user
+        self.response_body['id'] = int(self.response_body['id'])
+        assert body == self.response_body, 'Incorrect response body'
+

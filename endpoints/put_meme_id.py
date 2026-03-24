@@ -15,6 +15,7 @@ class PutMemeById(Endpoint):
         response = requests.put(f'{self.url}/meme/{self.meme_id}', json=body, headers=self.headers)
         self.status_code = response.status_code
         self.response_body = response.json()
+        self.user = self.response_body['updated_by']
         print(f'Обновлённые данные: {self.response_body}')
 
     @allure.step('Trying to edit meme with invalid data')
@@ -25,11 +26,6 @@ class PutMemeById(Endpoint):
         response = requests.put(f'{self.url}/meme/{meme_id}', json=body, headers=self.headers)
         self.status_code = response.status_code
 
-    # Проверка того, что данные мема действительно обновились
-    @allure.step('Verify that the meme data has been updated')
-    def check_updating_meme(self):
-        self.response_body['id'] = int(self.response_body['id'])
-        assert self.response_body != self.old_response_body, 'data was not updated'
 
     # Отдельный метод, т.к. в ответе этого метода type(id) is str
     @allure.step('Validate meme_id')

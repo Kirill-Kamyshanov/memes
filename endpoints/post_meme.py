@@ -12,6 +12,7 @@ class PostAMeme(Endpoint):
         self.status_code = response.status_code
         self.response_body = response.json()
         self.meme_id = response.json()['id']
+        self.user = response.json()['updated_by']
 
     # Метод для негативных тестов
     @allure.step('Trying to create new meme with invalid data')
