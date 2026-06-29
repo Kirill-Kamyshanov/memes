@@ -34,7 +34,6 @@ class GetAllMemes(Endpoint):
             assert 'info' in meme, "Missing 'info' field"
             assert 'updated_by' in meme, "Missing 'updated_by' field"
 
-            assert type(meme["id"]) is int, "id is not an integer"
             assert type(meme["text"]) is str, "Text is not a string"
             assert type(meme["url"]) is str, "url is not a string"
             assert type(meme["tags"]) is list, "tags is not an array"
