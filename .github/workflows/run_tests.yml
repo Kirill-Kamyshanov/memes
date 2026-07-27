@@ -88,19 +88,20 @@ jobs:
           retention-days: 1
 
   publish-report:
-    needs: generate-report
     runs-on: ubuntu-latest
-    name: Publish to GitHub Pages 🌐
-
+    needs: generate-report
+    name: Report publication 🌐
     steps:
-      # Здесь тоже можно убрать download-artifact, но я оставил его для перестраховки
+      # Этот шаг больше не нужен!
       # - name: Download all workflow run artifacts
       #   uses: actions/download-artifact@v4
+
+      # Загружаем только то, что находится в ./_site
       - name: Upload Pages artifact 🗄️
         uses: actions/upload-pages-artifact@v3
         with:
-          # Отчёт уже лежит в _site, поэтому просто указываем эту папку
           path: _site
+
       - name: Deploy to GitHub Pages 🚀
         id: deployment
         uses: actions/deploy-pages@v4
