@@ -1,9 +1,7 @@
-version: "3.8"
-
 services:
   smoke-tests:
     build: .
     command: pytest -n 4 -m smoke
   regression-tests:
-    build: .4
+    build: .
     command: pytest -n 4 -m regression
