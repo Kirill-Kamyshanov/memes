@@ -31,56 +31,59 @@ put_bodies_positive = [
      "info": {"additional info": "training 5 put"}},
 ]
 
+@pytest.mark.regression
+class TestApiMemes:
+    @pytest.mark.smoke
+    def test_post_authorize(self, check_token, post_authorize):
+        post_authorize.generate_new_token(user)
+        post_authorize.check_that_status_code_is_200()
+        post_authorize.check_response_body_presence()
+        post_authorize.check_response_structure()
 
-def test_post_authorize(check_token, post_authorize):
-    post_authorize.generate_new_token(user)
-    post_authorize.check_that_status_code_is_200()
-    post_authorize.check_response_body_presence()
-    post_authorize.check_response_structure()
-
-
-def test_get_authorize_token(get_authorize_token, check_token):
-    get_authorize_token.checking_auth_token(check_token, name)
-    get_authorize_token.check_that_status_code_is_200()
-
- # Одна проверка падает (id не int)
-def test_get_memes(get_memes, check_token):
-    get_memes.get_all_memes(check_token)
-    get_memes.check_that_status_code_is_200()
-    get_memes.check_response_body_presence()
-    get_memes.check_response_structure()
+    @pytest.mark.smoke
+    def test_get_authorize_token(self, get_authorize_token, check_token):
+        get_authorize_token.checking_auth_token(check_token, name)
+        get_authorize_token.check_that_status_code_is_200()
 
 
-def test_get_meme_id(get_meme_id, check_token, create_test_meme_then_delete):
-    get_meme_id.get_meme_by_id(check_token, create_test_meme_then_delete)
-    get_meme_id.check_that_status_code_is_200()
-    get_meme_id.check_response_body_presence()
-    get_meme_id.check_response_structure()
-    get_meme_id.check_meme_id()
+     # Одна проверка падает (id не int)
+    @pytest.mark.smoke
+    def test_get_memes(self, get_memes, check_token):
+        get_memes.get_all_memes(check_token)
+        get_memes.check_that_status_code_is_200()
+        get_memes.check_response_body_presence()
+        get_memes.check_response_structure()
 
+    @pytest.mark.smoke
+    def test_get_meme_id(self, get_meme_id, check_token, create_test_meme_then_delete):
+        get_meme_id.get_meme_by_id(check_token, create_test_meme_then_delete)
+        get_meme_id.check_that_status_code_is_200()
+        get_meme_id.check_response_body_presence()
+        get_meme_id.check_response_structure()
+        get_meme_id.check_meme_id()
 
-@pytest.mark.parametrize("body", create_bodies_positive)
-def test_post_meme(post_meme, check_token, body):
-    post_meme.create_new_meme(token=check_token, body=body)
-    post_meme.check_that_status_code_is_200()
-    post_meme.check_response_body_presence()
-    post_meme.check_response_structure()
-    post_meme.check_response_data(body)
+    @pytest.mark.smoke
+    @pytest.mark.parametrize("body", create_bodies_positive)
+    def test_post_meme(self, post_meme, check_token, body):
+        post_meme.create_new_meme(token=check_token, body=body)
+        post_meme.check_that_status_code_is_200()
+        post_meme.check_response_body_presence()
+        post_meme.check_response_structure()
+        post_meme.check_response_data(body)
 
-    post_meme.delete_test_meme()
+        post_meme.delete_test_meme()
 
+    @pytest.mark.parametrize("new_body", put_bodies_positive)
+    def test_put_meme_id(self, put_meme_id, check_token, create_test_meme_then_delete, new_body):
+        put_meme_id.put_meme_by_id(meme_id=create_test_meme_then_delete, token=check_token, body=new_body)
+        put_meme_id.check_that_status_code_is_200()
+        put_meme_id.check_response_body_presence()
+        put_meme_id.check_response_structure()
+        put_meme_id.check_meme_id()
+        put_meme_id.check_response_data(new_body)
 
-@pytest.mark.parametrize("new_body", put_bodies_positive)
-def test_put_meme_id(put_meme_id, check_token, create_test_meme_then_delete, new_body):
-    put_meme_id.put_meme_by_id(meme_id=create_test_meme_then_delete, token=check_token, body=new_body)
-    put_meme_id.check_that_status_code_is_200()
-    put_meme_id.check_response_body_presence()
-    put_meme_id.check_response_structure()
-    put_meme_id.check_meme_id()
-    put_meme_id.check_response_data(new_body)
-
-
-def test_delete_meme_id(delete_meme_id, check_token):
-    delete_meme_id.create_test_meme(token=check_token)
-    delete_meme_id.delete_meme()
-    delete_meme_id.check_that_meme_has_been_deleted()
+    @pytest.mark.smoke
+    def test_delete_meme_id(self, delete_meme_id, check_token):
+        delete_meme_id.create_test_meme(token=check_token)
+        delete_meme_id.delete_meme()
+        delete_meme_id.check_that_meme_has_been_deleted()
