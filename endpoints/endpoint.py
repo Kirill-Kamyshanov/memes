@@ -2,13 +2,15 @@ import allure
 
 
 class Endpoint:
-    url = 'http://memesapi.course.qa-practice.com'
     meme_id = None
     response_body = None
     status_code = None
     auth_token = None
     user = None
     headers = {"Content-Type": "application/json"}
+
+    def __init__(self, url):
+        self.url = url
 
     # Проверки на статус-коды
     @allure.step('Checking that status code is 200')
@@ -54,7 +56,8 @@ class Endpoint:
     # Проверка того, что id мема в ответе соответствует переданному meme_id
     @allure.step('Validate meme_id')
     def check_meme_id(self):
-        assert self.meme_id == self.response_body['id'], f'meme_id does not match {type(self.meme_id)} {type(self.response_body)['id']}'
+        assert self.meme_id == self.response_body[
+            'id'], f'meme_id does not match {type(self.meme_id)} {type(self.response_body)['id']}'
 
     # Общий метод для POST и PUT
     @allure.step('Checking response body data')
@@ -63,4 +66,3 @@ class Endpoint:
         body['updated_by'] = self.user
         self.response_body['id'] = int(self.response_body['id'])
         assert body == self.response_body, 'Incorrect response body'
-

@@ -1,7 +1,11 @@
 services:
-  smoke-tests:
+  tests:
     build: .
+    image: my-tests:latest
+
+  smoke-tests:
+    image: my-tests:latest
     command: pytest -n 4 -m smoke
   regression-tests:
-    build: .
+    image: my-tests:latest
     command: pytest -n 4 -m regression

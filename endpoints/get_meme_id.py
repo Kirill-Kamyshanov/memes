@@ -5,6 +5,7 @@ from endpoints.endpoint import Endpoint
 
 
 class GetOneMemeById(Endpoint):
+
     @allure.step('Sending request to get meme by id')
     def get_meme_by_id(self, token, meme_id):
         self.meme_id = meme_id
