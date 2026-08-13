@@ -15,31 +15,26 @@ jobs:
         uses: actions/checkout@v4
 
       - name: 🔧 Подготовка окружения
-#        run: |
-#          # Так как раннер локальный, мы просто используем системный Python
-#          python -m venv venv
-#          source venv/bin/activate
-#          pip install --upgrade pip
-#          pip install -r requirements.txt
-#      - name: 🔧 Подготовка окружения
         run: |
           python -m venv venv
           .\venv\Scripts\Activate.ps1
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-#        shell: pwsh
 
       - name: 🧪 Запуск тестов
         run: |
           source venv/bin/activate
-          pytest tests/ --alluredir=./allure-results --clean-alluredir -v || true
+          pytest tests/ --alluredir=./allure-results --clean-alluredir -v
+        continue-on-error: true
 
       - name: 📊 Генерация Allure HTML
+        if: always()
         run: |
           # Убедись, что на компьютере, где запущен раннер, установлен Allure CLI
           allure generate ./allure-results -o ./allure-report --clean
 
       - name: 🚀 Публикация в GitVerse Pages (ветка gh-pages)
+        if: always()
         run: |
           # 1. Очищаем временную папку от прошлых запусков раннера!
           rm -rf /tmp/allure-report
@@ -62,6 +57,7 @@ jobs:
           git push origin gh-pages --force
 
       - name: 🔗 Ссылка на Allure Отчет
+        if: always()
         run: |
           # Формируем автоматическую ссылку (используем домен .site для GitVerse Pages)
           REPORT_URL="https://${{ github.repository_owner }}.gitverse.site/${{ github.event.repository.name }}/"
