@@ -44,28 +44,28 @@ jobs:
 
 
       # НИЖЕ ЕБАЛА
-      - name: 🚀 Публикация в GitVerse Pages (ветка gh-pages)
-        if: always()
-        run: |
-          # 1. Очищаем временную папку от прошлых запусков раннера!
-          rm -rf /tmp/allure-report
-
-          # 2. Копируем свежий отчет во временную папку
-          cp -r ./allure-report /tmp/allure-report
-
-          # 3. Переключаемся на ветку для Pages
-          git config --global user.name "GitVerse CI"
-          git config --global user.email "ci@gitverse.ru"
-          git checkout -B gh-pages
-
-          # 4. Заменяем содержимое ветки отчетом
-          rm -rf ./*
-          cp -r /tmp/allure-report/* ./
-
-          git add .
-          git commit -m "Deploy Allure Report to Pages"
-          # Пушим принудительно, чтобы обновить сайт
-          git push origin gh-pages --force
+#      - name: 🚀 Публикация в GitVerse Pages (ветка gh-pages)
+#        if: always()
+#        run: |
+#          # 1. Очищаем временную папку от прошлых запусков раннера!
+#          rm -rf /tmp/allure-report
+#
+#          # 2. Копируем свежий отчет во временную папку
+#          cp -r ./allure-report /tmp/allure-report
+#
+#          # 3. Переключаемся на ветку для Pages
+#          git config --global user.name "GitVerse CI"
+#          git config --global user.email "ci@gitverse.ru"
+#          git checkout -B gh-pages
+#
+#          # 4. Заменяем содержимое ветки отчетом
+#          rm -rf ./*
+#          cp -r /tmp/allure-report/* ./
+#
+#          git add .
+#          git commit -m "Deploy Allure Report to Pages"
+#          # Пушим принудительно, чтобы обновить сайт
+#          git push origin gh-pages --force
 
 
 
