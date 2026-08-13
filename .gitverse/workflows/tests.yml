@@ -107,4 +107,3 @@ jobs:
           Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value "### 📊 Результаты тестирования"
           Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value "Отчет сгенерирован и доступен по ссылке:"
           Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value "[👉 Перейдите сюда, чтобы открыть Allure Report]($REPORT_URL)"
-        shell: pwsh
