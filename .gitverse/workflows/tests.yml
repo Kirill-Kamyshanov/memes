@@ -40,78 +40,41 @@ jobs:
           # Убедись, что на компьютере, где запущен раннер, установлен Allure CLI
           allure generate ./allure-results -o ./allure-report --clean
 
-#      - name: 🚀 Публикация в GitVerse Pages (ветка gh-pages)
-#        if: always()
-#        run: |
-#          # 1. Очищаем временную папку от прошлых запусков раннера!
-#          rm -rf /tmp/allure-report
-#
-#          # 2. Копируем свежий отчет во временную папку
-#          cp -r ./allure-report /tmp/allure-report
-#
-#          # 3. Переключаемся на ветку для Pages
-#          git config --global user.name "GitVerse CI"
-#          git config --global user.email "ci@gitverse.ru"
-#          git checkout -B gh-pages
-#
-#          # 4. Заменяем содержимое ветки отчетом
-#          rm -rf ./*
-#          cp -r /tmp/allure-report/* ./
-#
-#          git add .
-#          git commit -m "Deploy Allure Report to Pages"
-#          # Пушим принудительно, чтобы обновить сайт
-#          git push origin gh-pages --force
-
       - name: 🚀 Публикация в GitVerse Pages (ветка gh-pages)
         if: always()
         run: |
-          # 1. Удаляем старую временную папку (если есть)
-          if (Test-Path /tmp/allure-report) { Remove-Item -Recurse -Force /tmp/allure-report }
+          # 1. Очищаем временную папку от прошлых запусков раннера!
+          rm -rf /tmp/allure-report
 
-          # 2. Создаём временную папку и копируем отчёт
-          New-Item -ItemType Directory -Path /tmp/allure-report -Force
-          Copy-Item -Recurse ./allure-report/* /tmp/allure-report/
+          # 2. Копируем свежий отчет во временную папку
+          cp -r ./allure-report /tmp/allure-report
 
-          # 3. Настраиваем Git
+          # 3. Переключаемся на ветку для Pages
           git config --global user.name "GitVerse CI"
           git config --global user.email "ci@gitverse.ru"
           git checkout -B gh-pages
 
-          # 4. Очищаем ветку (кроме папки .git)
-          Get-ChildItem -Exclude .git | Remove-Item -Recurse -Force
+          # 4. Заменяем содержимое ветки отчетом
+          rm -rf ./*
+          cp -r /tmp/allure-report/* ./
+
+          git add .
+          git commit -m "Deploy Allure Report to Pages"
+          # Пушим принудительно, чтобы обновить сайт
+          git push origin gh-pages --force
 
 
+      - name: 🔗 Ссылка на Allure Отчет
+        if: always()
+        run: |
+#           Формируем автоматическую ссылку (используем домен .site для GitVerse Pages)
+          REPORT_URL="https://${{ github.repository_owner }}.gitverse.site/${{ github.event.repository.name }}/"
 
+          # Выводим в логи терминала
+          echo "✅ Отчет успешно опубликован!"
+          echo "🚀 Открыть Allure: $REPORT_URL"
 
-#      - name: 🔗 Ссылка на Allure Отчет
-#        if: always()
-#        run: |
-##           Формируем автоматическую ссылку (используем домен .site для GitVerse Pages)
-#          REPORT_URL="https://${{ github.repository_owner }}.gitverse.site/${{ github.event.repository.name }}/"
-#
-#          # Выводим в логи терминала
-#          echo "✅ Отчет успешно опубликован!"
-#          echo "🚀 Открыть Allure: $REPORT_URL"
-#
-#          # Выводим на главную страницу пайплайна (Job Summary)
-#          echo "### 📊 Результаты тестирования" >> $GITHUB_STEP_SUMMARY
-#          echo "Отчет сгенерирован и доступен по ссылке:" >> $GITHUB_STEP_SUMMARY
-#          echo "[👉 Перейдите сюда, чтобы открыть Allure Report]($REPORT_URL)" >> $GITHUB_STEP_SUMMARY
-
-#      - name: 🔗 Ссылка на Allure Отчет
-#        if: always()
-#        run: |
-#          $REPORT_URL = "https://${{ github.repository_owner }}.gitverse.site/${{ github.event.repository.name }}/"
-#
-#          Write-Host "✅ Отчет успешно опубликован!"
-#          Write-Host "🚀 Открыть Allure: $REPORT_URL"
-#
-#          # Пишем через Add-Content, экранируя скобки
-#          $line1 = "### 📊 Результаты тестирования"
-#          $line2 = "Отчет сгенерирован и доступен по ссылке:"
-#          $line3 = "[👉 Перейдите сюда, чтобы открыть Allure Report]($REPORT_URL)"
-#
-#          Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value $line1
-#          Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value $line2
-#          Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value $line3
+          # Выводим на главную страницу пайплайна (Job Summary)
+          echo "### 📊 Результаты тестирования" >> $GITHUB_STEP_SUMMARY
+          echo "Отчет сгенерирован и доступен по ссылке:" >> $GITHUB_STEP_SUMMARY
+          echo "[👉 Перейдите сюда, чтобы открыть Allure Report]($REPORT_URL)" >> $GITHUB_STEP_SUMMARY
