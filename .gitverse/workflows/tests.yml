@@ -81,17 +81,32 @@ jobs:
           # 4. Очищаем ветку (кроме папки .git)
           Get-ChildItem -Exclude .git | Remove-Item -Recurse -Force
 
+#      - name: 🔗 Ссылка на Allure Отчет
+#        if: always()
+#        run: |
+#          # Формируем автоматическую ссылку (используем домен .site для GitVerse Pages)
+#          REPORT_URL="https://${{ github.repository_owner }}.gitverse.site/${{ github.event.repository.name }}/"
+#
+#          # Выводим в логи терминала
+#          echo "✅ Отчет успешно опубликован!"
+#          echo "🚀 Открыть Allure: $REPORT_URL"
+#
+#          # Выводим на главную страницу пайплайна (Job Summary)
+#          echo "### 📊 Результаты тестирования" >> $GITHUB_STEP_SUMMARY
+#          echo "Отчет сгенерирован и доступен по ссылке:" >> $GITHUB_STEP_SUMMARY
+#          echo "[👉 Перейдите сюда, чтобы открыть Allure Report]($REPORT_URL)" >> $GITHUB_STEP_SUMMARY
+
       - name: 🔗 Ссылка на Allure Отчет
         if: always()
         run: |
           # Формируем автоматическую ссылку (используем домен .site для GitVerse Pages)
-          REPORT_URL="https://${{ github.repository_owner }}.gitverse.site/${{ github.event.repository.name }}/"
+          $REPORT_URL = "https://${{ github.repository_owner }}.gitverse.site/${{ github.event.repository.name }}/"
           
           # Выводим в логи терминала
-          echo "✅ Отчет успешно опубликован!"
-          echo "🚀 Открыть Allure: $REPORT_URL"
+          Write-Host "✅ Отчет успешно опубликован!"
+          Write-Host "🚀 Открыть Allure: $REPORT_URL"
           
-          # Выводим на главную страницу пайплайна (Job Summary)
-          echo "### 📊 Результаты тестирования" >> $GITHUB_STEP_SUMMARY
-          echo "Отчет сгенерирован и доступен по ссылке:" >> $GITHUB_STEP_SUMMARY
-          echo "[👉 Перейдите сюда, чтобы открыть Allure Report]($REPORT_URL)" >> $GITHUB_STEP_SUMMARY
+          # Выводим на главную страницу пайплайна (Job Summary) - экранируем спецсимволы
+          "### 📊 Результаты тестирования" >> $env:GITHUB_STEP_SUMMARY
+          "Отчет сгенерирован и доступен по ссылке:" >> $env:GITHUB_STEP_SUMMARY
+          "[👉 Перейдите сюда, чтобы открыть Allure Report]($REPORT_URL)" >> $env:GITHUB_STEP_SUMMARY
