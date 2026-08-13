@@ -21,14 +21,13 @@ jobs:
 #          source venv/bin/activate
 #          pip install --upgrade pip
 #          pip install -r requirements.txt
-#          - name: 🔧 Подготовка окружения
-
+#      - name: 🔧 Подготовка окружения
         run: |
           python -m venv venv
           .\venv\Scripts\Activate.ps1
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-        shell: pwsh
+#        shell: pwsh
 
       - name: 🧪 Запуск тестов
         run: |
