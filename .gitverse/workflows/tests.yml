@@ -1,0 +1,69 @@
+name: GitVerse CI with Local Runner
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  run_tests:
+    tags:
+      self-hosted # Здесь мы указываем label твоего поднятого раннера!
+    runs-on: self-hosted
+    steps:
+      - name: 📥 Чекаут кода
+        uses: actions/checkout@v4
+
+      - name: 🔧 Подготовка окружения
+        run: |
+          # Так как раннер локальный, мы просто используем системный Python
+          python3 -m venv venv
+          source venv/bin/activate
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: 🧪 Запуск тестов
+        run: |
+          source venv/bin/activate
+          pytest tests/ --alluredir=./allure-results --clean-alluredir -v || true
+
+      - name: 📊 Генерация Allure HTML
+        run: |
+          # Убедись, что на компьютере, где запущен раннер, установлен Allure CLI
+          allure generate ./allure-results -o ./allure-report --clean
+
+      - name: 🚀 Публикация в GitVerse Pages (ветка gh-pages)
+        run: |
+          # 1. Очищаем временную папку от прошлых запусков раннера!
+          rm -rf /tmp/allure-report
+
+          # 2. Копируем свежий отчет во временную папку
+          cp -r ./allure-report /tmp/allure-report
+
+          # 3. Переключаемся на ветку для Pages
+          git config --global user.name "GitVerse CI"
+          git config --global user.email "ci@gitverse.ru"
+          git checkout -B gh-pages
+
+          # 4. Заменяем содержимое ветки отчетом
+          rm -rf ./*
+          cp -r /tmp/allure-report/* ./
+
+          git add .
+          git commit -m "Deploy Allure Report to Pages"
+          # Пушим принудительно, чтобы обновить сайт
+          git push origin gh-pages --force
+
+      - name: 🔗 Ссылка на Allure Отчет
+        run: |
+          # Формируем автоматическую ссылку (используем домен .site для GitVerse Pages)
+          REPORT_URL="https://${{ github.repository_owner }}.gitverse.site/${{ github.event.repository.name }}/"
+          
+          # Выводим в логи терминала
+          echo "✅ Отчет успешно опубликован!"
+          echo "🚀 Открыть Allure: $REPORT_URL"
+          
+          # Выводим на главную страницу пайплайна (Job Summary)
+          echo "### 📊 Результаты тестирования" >> $GITHUB_STEP_SUMMARY
+          echo "Отчет сгенерирован и доступен по ссылке:" >> $GITHUB_STEP_SUMMARY
+          echo "[👉 Перейдите сюда, чтобы открыть Allure Report]($REPORT_URL)" >> $GITHUB_STEP_SUMMARY
