@@ -17,7 +17,7 @@ jobs:
       - name: 🔧 Подготовка окружения
         run: |
           # Так как раннер локальный, мы просто используем системный Python
-          python3 -m venv venv
+          python -m venv venv
           source venv/bin/activate
           pip install --upgrade pip
           pip install -r requirements.txt
