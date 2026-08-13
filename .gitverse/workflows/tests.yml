@@ -65,7 +65,7 @@ jobs:
 #          git add .
 #          git commit -m "Deploy Allure Report to Pages"
 #          # Пушим принудительно, чтобы обновить сайт
-#          git push origin gh-pages --force
+#          git push origin gh-pages --for ce
 
 
 
