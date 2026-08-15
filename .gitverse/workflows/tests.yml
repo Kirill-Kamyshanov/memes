@@ -14,7 +14,7 @@ jobs:
   run_tests:
     tags:
       self-hosted # Здесь мы указываем label твоего поднятого раннера
-    runs-on: self-hosted
+    runs-on: self-hosted:host
     steps:
       - name: 📥 Чекаут кода
         uses: actions/checkout@v4
