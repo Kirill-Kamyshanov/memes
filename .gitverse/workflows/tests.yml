@@ -38,31 +38,24 @@ jobs:
         if: always()
         run: allure generate ./allure-results -o ./allure-report --clean
 
-#      - name: 🚀 Публикация в GitVerse Pages (ветка gh-pages)
-#        if: always()
-#        run: |
-#          Remove-Item -Recurse -Force /tmp/allure-report
-#          Copy-Item -Recurse ./allure-report /tmp/allure-report
-#          git config --global user.name "GitVerse CI"
-#          git config --global user.email "ci@gitverse.ru"
-#          git checkout -B gh-pages
-#          Get-ChildItem -Exclude .git | Remove-Item -Recurse -Force
-#          Copy-Item -Recurse /tmp/allure-report/* ./
-#          git add .
-#          git commit -m "Deploy Allure Report to Pages"
-#          git push origin gh-pages --force
-#
-#
-#      - name: 🔗 Ссылка на Allure Отчет
-#        if: always()
-#        run: |
-#          REPORT_URL="https://${{ github.repository_owner }}.gitverse.site/${{ github.event.repository.name }}/"
-####           Формируем автоматическую ссылку (используем домен .site для GitVerse Pages)
-##          # Выводим в логи терминала
-#          echo "✅ Отчет успешно опубликован!"
-#          echo "🚀 Открыть Allure- $REPORT_URL"
-#
-##          # Выводим на главную страницу пайплайна (Job Summary)
-#          echo "### 📊 Результаты тестирования" >> $GITHUB_STEP_SUMMARY
-#          echo "Отчет сгенерирован и доступен по ссылке:" >> $GITHUB_STEP_SUMMARY
-#          echo "[👉 Перейдите сюда, чтобы открыть Allure Report]($REPORT_URL)" >> $GITHUB_STEP_SUMMARY
+      - name: 🚀 Публикация в GitVerse Pages (ветка gh-pages)
+        if: always()
+        run: |
+          Remove-Item -Recurse -Force /tmp/allure-report
+          Copy-Item -Recurse ./allure-report /tmp/allure-report
+          git config --global user.name "GitVerse CI"
+          git config --global user.email "ci@gitverse.ru"
+          git checkout -B gh-pages
+          Get-ChildItem -Exclude .git | Remove-Item -Recurse -Force
+          Copy-Item -Recurse /tmp/allure-report/* ./
+          git add .
+          git commit -m "Deploy Allure Report to Pages"
+          git push origin gh-pages --force
+
+      - name: 🔗 Ссылка на Allure Отчет
+        if: always()
+        run: |
+          REPORT_URL="https://${{ github.repository_owner }}.gitverse.site/${{ github.event.repository.name }}/"
+          echo "✅ Отчет успешно опубликован!"
+          echo "🚀 Открыть Allure: $REPORT_URL"
+          echo "📊 Ссылка на отчет: $REPORT_URL"
