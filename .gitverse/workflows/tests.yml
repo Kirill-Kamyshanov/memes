@@ -77,5 +77,4 @@ jobs:
         run: |
           $REPORT_URL = "https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"
           Write-Output "Отчет успешно опубликован!"
-          Write-Output "Открыть Allure: $REPORT_URL"
-          Write-Output "Ссылка на отчет: $REPORT_URL"
+          Write-Output "Open Allure-report: $REPORT_URL"
