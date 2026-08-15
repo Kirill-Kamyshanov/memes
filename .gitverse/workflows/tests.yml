@@ -24,6 +24,13 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: 🔧 Установка Allure
+        run: |
+          curl -sL https://github.com/allure-framework/allure2/releases/download/2.29.0/allure-2.29.0.tgz -o allure.tgz
+          tar -xzf allure.tgz -C /opt
+          sudo ln -s /opt/allure-2.29.0/bin/allure /usr/local/bin/allure
+          allure --version
+
       - name: 🧪 Запуск тестов
         run: |
           source venv/bin/activate
@@ -43,30 +50,15 @@ jobs:
         env:
           GIT_AUTH_TOKEN: ${{ secrets.SECRET_TOKEN }}
         run: |
-          # 1. Очищаем временную папку
           rm -rf /tmp/allure-report
-
-          # 2. Копируем отчет во временную папку
           cp -r ./allure-report /tmp/allure-report
-
-          # 3. Настраиваем Git
           git config --global user.name "GitVerse CI"
           git config --global user.email "ci@gitverse.ru"
-
-          # 4. Переключаемся на ветку gh-pages (создаём, если нет)
           git checkout -B gh-pages
-
-          # 5. Удаляем все файлы в корне (кроме .git)
           find . -maxdepth 1 ! -name '.git' ! -name '.' -exec rm -rf {} +
-
-          # 6. Копируем содержимое отчета в корень
           cp -r /tmp/allure-report/* .
-
-          # 7. Добавляем и коммитим
           git add .
           git commit -m "Deploy Allure Report to Pages" || echo "Nothing to commit"
-
-          # 8. Пушим с токеном
           git push https://${{ secrets.SECRET_TOKEN }}@gitverse.ru/Kirill-Kamyshanov/memes gh-pages --force
 
       - name: 🔗 Ссылка на Allure Отчет
