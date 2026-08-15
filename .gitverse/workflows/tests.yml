@@ -13,7 +13,7 @@ permissions:
 jobs:
   run_tests:
     tags:
-      self-hosted:host # Здесь мы указываем label твоего поднятого раннера
+      img-ubuntu-20.04 # Здесь мы указываем label твоего поднятого раннера
     runs-on: self-hosted
     steps:
       - name: 📥 Чекаут кода
