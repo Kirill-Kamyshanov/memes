@@ -12,9 +12,6 @@ permissions:
 
 jobs:
   run_tests:
-#    tags:
-#      img-ubuntu-20.04 # Здесь мы указываем label твоего поднятого раннера
-#    runs-on: self-hosted
     runs-on: ubuntu-latest
     steps:
       - name: 📥 Чекаут кода
@@ -23,13 +20,13 @@ jobs:
       - name: 🔧 Подготовка окружения
         run: |
           python -m venv venv
-          .\venv\Scripts\Activate.ps1
+          source venv/bin/activate
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
       - name: 🧪 Запуск тестов
         run: |
-          .\venv\Scripts\Activate.ps1
+          source venv/bin/activate
           pytest tests/ --alluredir=./allure-results --clean-alluredir -v
         continue-on-error: true
         env:
@@ -37,28 +34,45 @@ jobs:
 
       - name: 📊 Генерация Allure HTML
         if: always()
-        run: allure generate ./allure-results -o ./allure-report --clean
+        run: |
+          source venv/bin/activate
+          allure generate ./allure-results -o ./allure-report --clean
 
-      - name: 🚀 Публикация в GitVerse Pages (ветка gh-pages )
+      - name: 🚀 Публикация в GitVerse Pages (ветка gh-pages)
         if: always()
         env:
           GIT_AUTH_TOKEN: ${{ secrets.SECRET_TOKEN }}
         run: |
-          Remove-Item -Recurse -Force /tmp/allure-report
-          Copy-Item -Recurse ./allure-report /tmp/allure-report
+          # 1. Очищаем временную папку
+          rm -rf /tmp/allure-report
+
+          # 2. Копируем отчет во временную папку
+          cp -r ./allure-report /tmp/allure-report
+
+          # 3. Настраиваем Git
           git config --global user.name "GitVerse CI"
           git config --global user.email "ci@gitverse.ru"
+
+          # 4. Переключаемся на ветку gh-pages (создаём, если нет)
           git checkout -B gh-pages
-          Get-ChildItem -Exclude .git | Remove-Item -Recurse -Force
-          Copy-Item -Recurse /tmp/allure-report/* ./
+
+          # 5. Удаляем все файлы в корне (кроме .git)
+          find . -maxdepth 1 ! -name '.git' ! -name '.' -exec rm -rf {} +
+
+          # 6. Копируем содержимое отчета в корень
+          cp -r /tmp/allure-report/* .
+
+          # 7. Добавляем и коммитим
           git add .
-          git commit -m "Deploy Allure Report to Pages"
+          git commit -m "Deploy Allure Report to Pages" || echo "Nothing to commit"
+
+          # 8. Пушим с токеном
           git push https://${{ secrets.SECRET_TOKEN }}@gitverse.ru/Kirill-Kamyshanov/memes gh-pages --force
 
-#      - name: 🔗 Ссылка на Allure Отчет
-#        if: always()
-#        run: |
-#          REPORT_URL="https://${{ github.repository_owner }}.gitverse.site/${{ github.event.repository.name }}/"
-#          echo "Отчет успешно опубликован!"
-#          echo "Открыть Allure: $REPORT_URL"
-#          echo "Ссылка на отчет: $REPORT_URL"
+      - name: 🔗 Ссылка на Allure Отчет
+        if: always()
+        run: |
+          REPORT_URL="https://${{ github.repository_owner }}.gitverse.site/${{ github.event.repository.name }}/"
+          echo "Отчет успешно опубликован!"
+          echo "Открыть Allure: $REPORT_URL"
+          echo "Ссылка на отчет: $REPORT_URL"
