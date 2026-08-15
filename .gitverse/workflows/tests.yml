@@ -61,23 +61,36 @@ jobs:
           path: ./pages-artifact
 
 
-      - name: 🚀 Публикация в GitVerse Pages (ветка gh-pages )
+      - name: 🚀 Публикация на GitVerse Pages
         if: always()
-        env:
-          TOKEN: ${{ secrets.SECRET_TOKEN }}
+        uses: actions/deploy-pages@v4
+
+
+#      - name: 🚀 Публикация в GitVerse Pages (ветка gh-pages )
+#        if: always()
+#        with:
+#          TOKEN: ${{ secrets.SECRET_TOKEN }}
+#        run: |
+#          Remove-Item -Recurse -Force /tmp/allure-report
+#          Copy-Item -Recurse ./allure-report /tmp/allure-report
+#          git config --global user.name "GitVerse CI"
+#          git config --global user.email "ci@gitverse.ru"
+#          git checkout -B gh-pages
+#          Get-ChildItem -Exclude .git | Remove-Item -Recurse -Force
+#          Copy-Item -Recurse /tmp/allure-report/* ./
+#          git add .
+#          git commit -m "Deploy Allure Report to Pages"
+#          git push https://$SECRET_TOKEN@gitverse.ru/Kirill-Kamyshanov/memes gh-pages --force
+
+
+      - name: Deploy report to Github Pages
+        if: always()
+        uses: peaceiris/actions-gh-pages@v4
+
         with:
-          TOKEN: ${{ secrets.SECRET_TOKEN }}
-        run: |
-          Remove-Item -Recurse -Force /tmp/allure-report
-          Copy-Item -Recurse ./allure-report /tmp/allure-report
-          git config --global user.name "GitVerse CI"
-          git config --global user.email "ci@gitverse.ru"
-          git checkout -B gh-pages
-          Get-ChildItem -Exclude .git | Remove-Item -Recurse -Force
-          Copy-Item -Recurse /tmp/allure-report/* ./
-          git add .
-          git commit -m "Deploy Allure Report to Pages"
-          git push https://$env:TOKEN@gitverse.ru/Kirill-Kamyshanov/memes gh-pages --force
+          github_token: ${{ secrets.SECRET_NEW }}
+          publish_dir: ./allure-report
+
 
 
       - name: 🔗 Ссылка на Allure Отчет
