@@ -13,7 +13,7 @@ permissions:
 jobs:
   run_tests:
     tags:
-      img-ubuntu-20.04 # Здесь мы указываем label твоего поднятого раннера
+      img-ubuntu-20.04
     runs-on: self-hosted
     steps:
       - name: 📥 Чекаут кода
@@ -45,32 +45,12 @@ jobs:
           name: allure-report
           path: ./allure-report
 
-
-#      - name: 🚀 Публикация в GitVerse Pages (ветка gh-pages )
-#        if: always()
-#        with:
-#          TOKEN: ${{ secrets.SECRET_TOKEN }}
-#        run: |
-#          Remove-Item -Recurse -Force /tmp/allure-report
-#          Copy-Item -Recurse ./allure-report /tmp/allure-report
-#          git config --global user.name "GitVerse CI"
-#          git config --global user.email "ci@gitverse.ru"
-#          git checkout -B gh-pages
-#          Get-ChildItem -Exclude .git | Remove-Item -Recurse -Force
-#          Copy-Item -Recurse /tmp/allure-report/* ./
-#          git add .
-#          git commit -m "Deploy Allure Report to Pages"
-#          git push https://$SECRET_TOKEN@gitverse.ru/Kirill-Kamyshanov/memes gh-pages --force
-
-
-      - name: Deploy report to Github Pages
+      - name: Загрузка отчета в GitVerse Pages
         if: always()
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.SECRET_TOKEN }}
           publish_dir: ./allure-report
-
-
 
       - name: 🔗 Ссылка на Allure Отчет
         if: success()
