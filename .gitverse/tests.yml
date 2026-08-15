@@ -43,10 +43,9 @@ jobs:
         env:
           GIT_AUTH_TOKEN: ${{ secrets.SECRET_TOKEN }}
         run: |
-          # 1. Очищаем временную папку
           rm -rf /tmp/allure-report
 
-          # 2. Копируем отчет во временную папку
+#           2. Копируем отчет во временную папку
           cp -r ./allure-report /tmp/allure-report
 
           # 3. Настраиваем Git
