@@ -53,7 +53,7 @@ jobs:
           git add .
           git commit -m "Deploy Allure Report to Pages"
           git push https://${{ secrets.SECRET_TOKEN }}@gitverse.ru/Kirill-Kamyshanov/memes gh-pages --force
-#          git push origin gh-pages --forc e
+#          git push origin gh-pages --force
 
 #      - name: 🔗 Ссылка на Allure Отчет
 #        if: always()
