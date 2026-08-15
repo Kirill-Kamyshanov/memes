@@ -48,6 +48,12 @@ jobs:
           git config --global user.name "GitVerse CI"
           git config --global user.email "ci@gitverse.ru"
           git checkout -B gh-pages
+          
+          echo "Текущая ветка:"
+          git branch --show-current
+          echo "Все локальные ветки:"
+          git branch -a
+    
           Get-ChildItem -Exclude .git | Remove-Item -Recurse -Force
           Copy-Item -Recurse /tmp/allure-report/* ./
           git add .
