@@ -37,8 +37,6 @@ jobs:
         if: always()
         run: allure generate ./allure-results -o ./allure-report --clean
 
-
-      # Выкладываем allure-отчёт на Github Pages
       - name: Deploy report to Github Pages
         if: always()
         uses: peaceiris/actions-gh-pages@v4
@@ -46,35 +44,8 @@ jobs:
           github_token: ${{ secrets.SECRET_NEW }}
           publish_dir: ./allure-report
 
-
-#      - name: 📤 Загрузка отчета в артефакты
-#        if: always()
-#        uses: actions/upload-artifact@v5
-#        with:
-#          name: allure-report
-#          path: ./allure-report
-#
-#      - name: 🚀 Публикация в Github Pages (ручной пуш)
-#        if: always()
-#        env:
-#          TOKEN: ${{ secrets.SECRET_TOKEN }}
-#        run: |
-#          Remove-Item -Recurse -Force /tmp/allure-report -ErrorAction SilentlyContinue
-#          Copy-Item -Recurse ./allure-report /tmp/allure-report
-#          git config --global user.name "Github CI"
-#          git config --global user.email "ci@Github.ru"
-#          try { git fetch origin gh-pages } catch { Write-Host "No remote gh-pages" }
-#          git checkout -B gh-pages
-#          try { git merge origin/gh-pages --allow-unrelated-histories -m "Merge" } catch { Write-Host "No merge" }
-#          Get-ChildItem -Exclude .git | Remove-Item -Recurse -Force
-#          Copy-Item -Recurse /tmp/allure-report/* ./
-#          git add .
-#          try { git commit -m "Deploy Allure Report" } catch { Write-Host "Nothing to commit" }
-#          git push https://$env:TOKEN@github.com/Kirill-Kamyshanov/memes gh-pages --force
-#
-#      - name: 🔗 Ссылка на Allure Отчет
-#        if: success()
-#        run: |
-#          REPORT_URL="https://${{ github.repository_owner }}.github.site/${{ github.event.repository.name }}/"
-#          echo "Отчет успешно опубликован!"
-#          echo "Открыть Allure: $REPORT_URL"
+      - name: 🔗 Ссылка на Allure Отчет
+        run: |
+          REPORT_URL="https://${{ github.repository_owner }}.github.site/${{ github.event.repository.name }}/"
+          echo "Отчет успешно опубликован!"
+          echo "Открыть Allure: $REPORT_URL"
