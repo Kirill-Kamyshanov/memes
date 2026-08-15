@@ -38,7 +38,7 @@ jobs:
         if: always()
         run: allure generate ./allure-results -o ./allure-report --clean
 
-      - name: 🚀 Публикация в GitVerse Pages (ветка gh-pages2 )
+      - name: 🚀 Публикация в GitVerse Pages (ветка gh-pages )
         if: always()
         env:
           GIT_AUTH_TOKEN: ${{ secrets.SECRET_TOKEN }}
@@ -47,12 +47,13 @@ jobs:
           Copy-Item -Recurse ./allure-report /tmp/allure-report
           git config --global user.name "GitVerse CI"
           git config --global user.email "ci@gitverse.ru"
-          git checkout -B gh-pages2
+          git checkout -B gh-pages
           Get-ChildItem -Exclude .git | Remove-Item -Recurse -Force
           Copy-Item -Recurse /tmp/allure-report/* ./
           git add .
           git commit -m "Deploy Allure Report to Pages"
-          git push https://${{ secrets.SECRET_TOKEN }}@gitverse.ru/Kirill-Kamyshanov/memes gh-pages2 --force
+          git push https://${{ secrets.SECRET_TOKEN }}@gitverse.ru/Kirill-Kamyshanov/memes gh-pages
+#          git push https://${{ secrets.SECRET_TOKEN }}@gitverse.ru/Kirill-Kamyshanov/memes gh-pages --force
 
       - name: 🔗 Ссылка на Allure Отчет
         if: always()
