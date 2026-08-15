@@ -12,8 +12,6 @@ permissions:
 
 jobs:
   run_tests:
-    tags:
-      img-ubuntu-20.04
     runs-on: self-hosted
     steps:
       - name: 📥 Чекаут кода
