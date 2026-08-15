@@ -52,7 +52,7 @@ jobs:
 #          git commit -m "Deploy Allure Report to Pages"
 #          git push origin gh-pages --force
 
-#      - name: 🔗 Ссылка на Allure Отчет
+#      - name: 🔗 Ссылка на Allure Отче т
 #        if: always()
 #        run: |
 #          REPORT_URL="https://${{ github.repository_owner }}.gitverse.site/${{ github.event.repository.name }}/"
