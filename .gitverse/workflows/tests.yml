@@ -60,56 +60,25 @@ jobs:
         with:
           path: ./pages-artifact
 
-      # 4. Публикуем на GitVerse Pages
-      - name: 🚀 Публикация в GitVerse Pages (ветка gh-pages)
+
+      - name: 🚀 Публикация в GitVerse Pages (ветка gh-pages )
         if: always()
         env:
           GIT_AUTH_TOKEN: ${{ secrets.SECRET_TOKEN }}
         run: |
-          Remove-Item -Recurse -Force /tmp/allure-report -ErrorAction SilentlyContinue
+          Remove-Item -Recurse -Force /tmp/allure-report
           Copy-Item -Recurse ./allure-report /tmp/allure-report
           git config --global user.name "GitVerse CI"
           git config --global user.email "ci@gitverse.ru"
-          try {
-            git fetch origin gh-pages
-          } catch {
-            Write-Host "No remote gh-pages"
-          }
           git checkout -B gh-pages
-          try {
-            git merge origin/gh-pages --allow-unrelated-histories -m "Merge remote gh-pages"
-          } catch {
-            Write-Host "No merge needed"
-          }
           Get-ChildItem -Exclude .git | Remove-Item -Recurse -Force
           Copy-Item -Recurse /tmp/allure-report/* ./
           git add .
-          try {
-            git commit -m "Deploy Allure Report to Pages"
-          } catch {
-            Write-Host "Nothing to commit"
-          }
-          git push https://${{ secrets.SECRET_TOKEN }}@gitverse.ru/Kirill-Kamyshanov/memes gh-pages --force
-
-
-#      - name: 🚀 Публикация в GitVerse Pages (ветка gh-pages )
-#        if: always()
-#        env:
-#          GIT_AUTH_TOKEN: ${{ secrets.SECRET_TOKEN }}
-#        run: |
-#          Remove-Item -Recurse -Force /tmp/allure-report
-#          Copy-Item -Recurse ./allure-report /tmp/allure-report
-#          git config --global user.name "GitVerse CI"
-#          git config --global user.email "ci@gitverse.ru"
-#          git checkout -B gh-pages
-#          Get-ChildItem -Exclude .git | Remove-Item -Recurse -Force
-#          Copy-Item -Recurse /tmp/allure-report/* ./
-#          git add .
-#          git commit -m "Deploy Allure Report to Pages"
-#          git push https://${{ secrets.SECRET_TOKEN }}@gitverse.ru/Kirill-Kamyshanov/memes gh-pages --force-with-lease
-##          git push https://${{ secrets.SECRET_TOKEN }}@gitverse.ru/Kirill-Kamyshanov/memes gh-pages --force
-#        with:
-#          github_token: ${{ secrets.SECRET_TOKEN }}
+          git commit -m "Deploy Allure Report to Pages"
+          git push https://${{ secrets.SECRET_TOKEN }}@gitverse.ru/Kirill-Kamyshanov/memes gh-pages --force-with-lease
+#          git push https://${{ secrets.SECRET_TOKEN }}@gitverse.ru/Kirill-Kamyshanov/memes gh-pages --force
+        with:
+          github_token: ${{ secrets.SECRET_TOKEN }}
 
       - name: 🔗 Ссылка на Allure Отчет
         if: success()
