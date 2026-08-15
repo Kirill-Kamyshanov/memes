@@ -46,6 +46,6 @@ jobs:
 
       - name: 🔗 Ссылка на Allure Отчет
         run: |
-          $REPORT_URL = "https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"
-          Write-Output "Отчет успешно опубликован!"
-          Write-Output "Открыть Allure: $REPORT_URL"
+          $REPORT_URL = "https://Kirill-Kamyshanov.github.io/memes/"
+          Write-Output "Allure report published successfully!"
+          Write-Output "Open Allure: $REPORT_URL"
