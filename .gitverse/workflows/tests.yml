@@ -37,36 +37,22 @@ jobs:
       - name: 📊 Генерация Allure HTML
         if: always()
         run: allure generate ./allure-results -o ./allure-report --clean
-##          Убедись, что на компьютере, где запущен раннер, установлен Allure CLI
 
-#
-#      # ниже проверит ь
       - name: 🚀 Публикация в GitVerse Pages (ветка gh-pages)
         if: always()
         run: |
           Remove-Item -Recurse -Force /tmp/allure-report
-## 1. Очищаем временную папку от прошлых запусков раннера!
-#          # 2. Копируем свежий отчет во временную папку
-#          cp -r ./allure-report /tmp/allure-report
           Copy-Item -Recurse ./allure-report /tmp/allure-report
-#
-#          # 3. Переключаемся на ветку для Pages
           git config --global user.name "GitVerse CI"
           git config --global user.email "ci@gitverse.ru"
           git checkout -B gh-pages
-#
-#          # 4. Заменяем содержимое ветки отчетом
-#          rm -rf ./*
           Get-ChildItem -Exclude .git | Remove-Item -Recurse -Force
           Copy-Item -Recurse /tmp/allure-report/* ./
-#          cp -r /tmp/allure-report/* ./
-#
           git add .
           git commit -m "Deploy Allure Report to Pages"
-#          # Пушим принудительно, чтобы обновить сайт
           git push origin gh-pages --force
-#
-#
+
+
       - name: 🔗 Ссылка на Allure Отчет
         if: always()
         run: |
