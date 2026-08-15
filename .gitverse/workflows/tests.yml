@@ -75,8 +75,7 @@ jobs:
           Copy-Item -Recurse /tmp/allure-report/* ./
           git add .
           git commit -m "Deploy Allure Report to Pages"
-          git push https://${{ secrets.SECRET_TOKEN }}@gitverse.ru/Kirill-Kamyshanov/memes gh-pages --force-with-lease
-#          git push https://${{ secrets.SECRET_TOKEN }}@gitverse.ru/Kirill-Kamyshanov/memes gh-pages --force
+          git push https://${{ secrets.SECRET_TOKEN }}@gitverse.ru/Kirill-Kamyshanov/memes gh-pages --force
         with:
           github_token: ${{ secrets.SECRET_TOKEN }}
 
