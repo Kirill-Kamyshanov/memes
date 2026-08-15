@@ -38,22 +38,13 @@ jobs:
         run: allure generate ./allure-results -o ./allure-report --clean
 
 
-      # Генерируем allure-отчёт с историей
-      - name: Generates Allure Report with history
-        uses: simple-elf/allure-report-action@v1.13
-        if: always()
-        with:
-          allure_results: allure-results
-          allure_history: allure-history
-
       # Выкладываем allure-отчёт на Github Pages
       - name: Deploy report to Github Pages
         if: always()
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: gh-pages
-          publish_dir: allure-history
+          publish_dir: ./allure-report
 
 
 #      - name: 📤 Загрузка отчета в артефакты
