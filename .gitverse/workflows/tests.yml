@@ -45,42 +45,22 @@ jobs:
           name: allure-report
           path: ./allure-report
 
-      # 2. Новый шаг: скачиваем артефакт для публикации
-      - name: 📥 Скачивание артефакта для Pages
+
+      - name: 🚀 Публикация в GitVerse Pages (ветка gh-pages )
         if: always()
-        uses: actions/download-artifact@v4
         with:
-          name: allure-report
-          path: ./pages-artifact
-
-      # 3. Загружаем артефакт в Pages
-      - name: 📤 Загрузка в GitVerse Pages
-        if: always()
-        uses: actions/upload-pages-artifact@v1
-        with:
-          path: ./pages-artifact
-
-
-      - name: 🚀 Публикация на GitVerse Pages
-        if: always()
-        uses: actions/deploy-pages@v4
-
-
-#      - name: 🚀 Публикация в GitVerse Pages (ветка gh-pages )
-#        if: always()
-#        with:
-#          TOKEN: ${{ secrets.SECRET_TOKEN }}
-#        run: |
-#          Remove-Item -Recurse -Force /tmp/allure-report
-#          Copy-Item -Recurse ./allure-report /tmp/allure-report
-#          git config --global user.name "GitVerse CI"
-#          git config --global user.email "ci@gitverse.ru"
-#          git checkout -B gh-pages
-#          Get-ChildItem -Exclude .git | Remove-Item -Recurse -Force
-#          Copy-Item -Recurse /tmp/allure-report/* ./
-#          git add .
-#          git commit -m "Deploy Allure Report to Pages"
-#          git push https://$SECRET_TOKEN@gitverse.ru/Kirill-Kamyshanov/memes gh-pages --force
+          TOKEN: ${{ secrets.SECRET_TOKEN }}
+        run: |
+          Remove-Item -Recurse -Force /tmp/allure-report
+          Copy-Item -Recurse ./allure-report /tmp/allure-report
+          git config --global user.name "GitVerse CI"
+          git config --global user.email "ci@gitverse.ru"
+          git checkout -B gh-pages
+          Get-ChildItem -Exclude .git | Remove-Item -Recurse -Force
+          Copy-Item -Recurse /tmp/allure-report/* ./
+          git add .
+          git commit -m "Deploy Allure Report to Pages"
+          git push https://$SECRET_TOKEN@gitverse.ru/Kirill-Kamyshanov/memes gh-pages --force
 
 
       - name: Deploy report to Github Pages
