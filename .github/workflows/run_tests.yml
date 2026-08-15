@@ -1,16 +1,9 @@
-# Настройка https://www.youtube.com/watch?v=HLbSSVBu5qI
-name: Automated tests
+name: GitVerse CI with Local Runner
 
 on:
-  workflow_dispatch:
-    inputs:
-      deployment_target:
-        description: Choose target
-        required: true
-        default: all
-        type: choice
-        options:
-          - all
+  push:
+    branches:
+      - main
 
 permissions:
   contents: read
@@ -18,111 +11,79 @@ permissions:
   id-token: write
 
 jobs:
-  download-history:
-    # if: false
-    runs-on: ubuntu-latest
-    name: Download history
+  run_tests:
+#    tags:
+#      img-ubuntu-20.04 # Здесь мы указываем label твоего поднятого раннера
+    runs-on: self-hosted
     steps:
-      - name: setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.14"
-      - run: >
-          ARTIFACT_ID=$(curl -L
-          -H "Accept: application/vnd.github+json"
-          -H "X-GitHub-Api-Version: 2022-11-28"
-          "https://api.github.com/repos/Kirill-Kamyshanov/memes/actions/artifacts?name=allure-results"
-          | python -c "import sys, json; print(json.load(sys.stdin)['artifacts'][0]['id']);")
-          &&
-          curl -L
-          -H "Accept: application/vnd.github+json"
-          -H "Authorization: Bearer ${{ secrets.TOKEN }}"
-          -H "X-GitHub-Api-Version: 2022-11-28"
-          https://api.github.com/repos/Kirill-Kamyshanov/memes/actions/artifacts/$ARTIFACT_ID/zip
-          -o artifacts.zip &&
-          REPORT_ID=$(curl -L
-          -H "Accept: application/vnd.github+json"
-          -H "X-GitHub-Api-Version: 2022-11-28"
-          "https://api.github.com/repos/Kirill-Kamyshanov/memes/actions/artifacts?name=github-pages"
-          | python -c "import sys, json; print(json.load(sys.stdin)['artifacts'][0]['id']);")
-          &&
-          curl -L
-          -H "Accept: application/vnd.github+json"
-          -H "Authorization: Bearer ${{ secrets.TOKEN }}"
-          -H "X-GitHub-Api-Version: 2022-11-28"
-          https://api.github.com/repos/Kirill-Kamyshanov/memes/actions/artifacts/$REPORT_ID/zip
-          -o pages.zip
-      - run: mkdir allure-results && unzip artifacts.zip -d allure-results
-      - run: mkdir old_pages pages_history && unzip pages.zip -d old_pages && tar -xvf old_pages/artifact.tar -C pages_history
-      - run: cp pages_history/history/* allure-results && cp -r pages_history/history allure-results
-      - name: Store allure history
-        uses: actions/upload-artifact@v5
-        with:
-          name: allure-results
-          path:
-            allure-results
-          retention-days: 1
-
-  test:
-    runs-on: ubuntu-latest
-    needs: download-history
-
-    steps:
-      - name: Checkout repository
+      - name: 📥 Чекаут кода
         uses: actions/checkout@v4
-      - name: setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.14"
-      - name: Install Chrome
-        run: sudo apt-get install google-chrome-stable
-      - name: install dependencies
-        run: pip install -r requirements.txt
-      - name: Download all workflow run artifacts
-        uses: actions/download-artifact@v4
-      - name: run tests
-        if: "github.event.inputs.deployment_target == 'all'"
-        run: pytest --alluredir=allure-results
+
+      - name: 🔧 Подготовка окружения
+        run: |
+          python -m venv venv
+          .\venv\Scripts\Activate.ps1
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: 🧪 Запуск тестов
+        run: |
+          .\venv\Scripts\Activate.ps1
+          pytest tests/ --alluredir=./allure-results --clean-alluredir -v
         continue-on-error: true
-      - name: Store allure results
-        uses: actions/upload-artifact@v5
-        with:
-          name: allure-results
-          path:
-            allure-results
-          retention-days: 1
+        env:
+          TOKEN: ${{ secrets.TOKEN }}
 
-  generate-report:
-    runs-on: ubuntu-latest
-    needs: test
-    name: Generate report
-    steps:
-      - uses: actions/setup-java@v4
+      - name: 📊 Генерация Allure HTML
+        if: always()
+        run: allure generate ./allure-results -o ./allure-report --clean
+
+      - name: 📤 Загрузка отчета в артефакты
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
-          distribution: 'microsoft' # See 'Supported distributions' for available options
-          java-version: '17'
-      - run: sudo wget https://github.com/allure-framework/allure2/releases/download/2.23.1/allure-2.23.1.tgz && sudo tar -zxvf allure-2.23.1.tgz -C /opt/ && sudo ln -s /opt/allure-2.23.1/bin/allure /usr/bin/allure
-      - name: Download all workflow run artifacts
+          name: allure-report
+          path: ./allure-report
+
+      # 2. Новый шаг: скачиваем артефакт для публикации
+      - name: 📥 Скачивание артефакта для Pages
+        if: always()
         uses: actions/download-artifact@v4
-      - run: allure generate -c allure-results -o _site
-      - name: Store generated report
-        uses: actions/upload-artifact@v5
         with:
-          name: _site
-          path:
-            _site
-          retention-days: 1
+          name: allure-report
+          path: ./pages-artifact
 
-  publish-report:
-    runs-on: ubuntu-latest
-    needs: generate-report
-    name: Report publication
-    steps:
-      - name: Download all workflow run artifacts
-        uses: actions/download-artifact@v4
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      # 3. Загружаем артефакт в Pages
+      - name: 📤 Загрузка в GitVerse Pages
+        if: always()
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: ./pages-artifact
 
+
+      - name: 🚀 Публикация в GitVerse Pages (ветка gh-pages )
+        if: always()
+        env:
+          TOKEN: ${{ secrets.SECRET_TOKEN }}
+        with:
+          TOKEN: ${{ secrets.SECRET_TOKEN }}
+        run: |
+          Remove-Item -Recurse -Force /tmp/allure-report
+          Copy-Item -Recurse ./allure-report /tmp/allure-report
+          git config --global user.name "GitVerse CI"
+          git config --global user.email "ci@gitverse.ru"
+          git checkout -B gh-pages
+          Get-ChildItem -Exclude .git | Remove-Item -Recurse -Force
+          Copy-Item -Recurse /tmp/allure-report/* ./
+          git add .
+          git commit -m "Deploy Allure Report to Pages"
+          git push https://$env:TOKEN@gitverse.ru/Kirill-Kamyshanov/memes gh-pages --force
+
+
+      - name: 🔗 Ссылка на Allure Отчет
+        if: success()
+        run: |
+          REPORT_URL="https://${{ github.repository_owner }}.gitverse.site/${{ github.event.repository.name }}/"
+          echo "Отчет успешно опубликован!"
+          echo "Открыть Allure: $REPORT_URL"
+          echo "Ссылка на отчет: $REPORT_URL"
