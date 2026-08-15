@@ -26,19 +26,19 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-#      - name: 🧪 Запуск тестов
-#        run: |
-#          .\venv\Scripts\Activate.ps1
-#          pytest tests/ --alluredir=./allure-results --clean-alluredir -v
-#        continue-on-error: true
-#        env:
-#          TOKEN: ${{ secrets.TOKEN }}
-#
-#      - name: 📊 Генерация Allure HTML
-#        if: always()
-#        run: |
-#          # Убедись, что на компьютере, где запущен раннер, установлен Allure CLI
-#          allure generate ./allure-results -o ./allure-report --clean
+      - name: 🧪 Запуск тестов
+        run: |
+          .\venv\Scripts\Activate.ps1
+          pytest tests/ --alluredir=./allure-results --clean-alluredir -v
+        continue-on-error: true
+        env:
+          TOKEN: ${{ secrets.TOKEN }}
+
+      - name: 📊 Генерация Allure HTML
+        if: always()
+        run: |
+#          Убедись, что на компьютере, где запущен раннер, установлен Allure CLI
+          allure generate ./allure-results -o ./allure-report --clean
 #
 #      # ниже проверит ь
 #      - name: 🚀 Публикация в GitVerse Pages (ветка gh-pages)
