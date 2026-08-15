@@ -38,7 +38,7 @@ jobs:
         if: always()
         run: allure generate ./allure-results -o ./allure-report --clean
 
-#      - name: 🚀 Публикация в GitVerse Pages (ветка gh-pages)
+#      - name: 🚀 Публикация в GitVerse Pages (ветка gh-pages )
 #        if: always()
 #        run: |
 #          Remove-Item -Recurse -Force /tmp/allure-report
