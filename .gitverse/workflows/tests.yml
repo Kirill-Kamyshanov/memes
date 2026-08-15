@@ -12,7 +12,9 @@ permissions:
 
 jobs:
   run_tests:
-    runs-on: ubuntu-latest
+    tags:
+      img-ubuntu-20.04 # Здесь мы указываем label твоего поднятого раннера
+    runs-on: self-hosted
     steps:
       - name: 📥 Чекаут кода
         uses: actions/checkout@v4
@@ -20,20 +22,13 @@ jobs:
       - name: 🔧 Подготовка окружения
         run: |
           python -m venv venv
-          source venv/bin/activate
+          .\venv\Scripts\Activate.ps1
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: 🔧 Установка Allure
-        run: |
-          curl -sL https://github.com/allure-framework/allure2/releases/download/2.29.0/allure-2.29.0.tgz -o allure.tgz
-          tar -xzf allure.tgz -C /opt
-          sudo ln -s /opt/allure-2.29.0/bin/allure /usr/local/bin/allure
-          allure --version
-
       - name: 🧪 Запуск тестов
         run: |
-          source venv/bin/activate
+          .\venv\Scripts\Activate.ps1
           pytest tests/ --alluredir=./allure-results --clean-alluredir -v
         continue-on-error: true
         env:
@@ -41,30 +36,28 @@ jobs:
 
       - name: 📊 Генерация Allure HTML
         if: always()
-        run: |
-          source venv/bin/activate
-          allure generate ./allure-results -o ./allure-report --clean
+        run: allure generate ./allure-results -o ./allure-report --clean
 
-      - name: 🚀 Публикация в GitVerse Pages (ветка gh-pages)
+      - name: 🚀 Публикация в GitVerse Pages (ветка gh-pages )
         if: always()
         env:
           GIT_AUTH_TOKEN: ${{ secrets.SECRET_TOKEN }}
         run: |
-          rm -rf /tmp/allure-report
-          cp -r ./allure-report /tmp/allure-report
+          Remove-Item -Recurse -Force /tmp/allure-report
+          Copy-Item -Recurse ./allure-report /tmp/allure-report
           git config --global user.name "GitVerse CI"
           git config --global user.email "ci@gitverse.ru"
           git checkout -B gh-pages
-          find . -maxdepth 1 ! -name '.git' ! -name '.' -exec rm -rf {} +
-          cp -r /tmp/allure-report/* .
+          Get-ChildItem -Exclude .git | Remove-Item -Recurse -Force
+          Copy-Item -Recurse /tmp/allure-report/* ./
           git add .
-          git commit -m "Deploy Allure Report to Pages" || echo "Nothing to commit"
+          git commit -m "Deploy Allure Report to Pages"
           git push https://${{ secrets.SECRET_TOKEN }}@gitverse.ru/Kirill-Kamyshanov/memes gh-pages --force
 
-      - name: 🔗 Ссылка на Allure Отчет
-        if: always()
-        run: |
-          REPORT_URL="https://${{ github.repository_owner }}.gitverse.site/${{ github.event.repository.name }}/"
-          echo "Отчет успешно опубликован! "
-          echo "Открыть Allure: $REPORT_URL"
-          echo "Ссылка на отчет: $REPORT_URL"
+#      - name: 🔗 Ссылка на Allure Отчет
+#        if: always()
+#        run: |
+#          REPORT_URL="https://${{ github.repository_owner }}.gitverse.site/${{ github.event.repository.name }}/"
+#          echo "Отчет успешно опубликован!"
+#          echo "Открыть Allure: $REPORT_URL"
+#          echo "Ссылка на отчет: $REPORT_URL"
