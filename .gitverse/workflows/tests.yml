@@ -52,7 +52,7 @@ jobs:
           Copy-Item -Recurse /tmp/allure-report/* ./
           git add .
           git commit -m "Deploy Allure Report to Pages"
-          git push origin gh-pages --force-with-lease
+          git push https://$env:GIT_AUTH_TOKEN@gitverse.ru/Kirill-Kamyshanov/memes gh-pages --force
 #          git push https://${{ secrets.SECRET_TOKEN }}@gitverse.ru/Kirill-Kamyshanov/memes gh-pages --force
 
 #      - name: 🔗 Ссылка на Allure Отчет
