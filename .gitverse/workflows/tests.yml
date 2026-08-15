@@ -65,6 +65,8 @@ jobs:
         if: always()
         env:
           GIT_AUTH_TOKEN: ${{ secrets.SECRET_TOKEN }}
+        with:
+          github_token: ${{ secrets.SECRET_TOKEN }}
         run: |
           Remove-Item -Recurse -Force /tmp/allure-report
           Copy-Item -Recurse ./allure-report /tmp/allure-report
@@ -75,9 +77,9 @@ jobs:
           Copy-Item -Recurse /tmp/allure-report/* ./
           git add .
           git commit -m "Deploy Allure Report to Pages"
+          echo "${{ secrets.SECRET_TOKEN }}"
           git push https://${{ secrets.SECRET_TOKEN }}@gitverse.ru/Kirill-Kamyshanov/memes gh-pages --force
-        with:
-          github_token: ${{ secrets.SECRET_TOKEN }}
+
 
       - name: 🔗 Ссылка на Allure Отчет
         if: success()
