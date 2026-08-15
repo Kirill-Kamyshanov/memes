@@ -75,7 +75,7 @@ jobs:
       - name: 🔗 Ссылка на Allure Отчет
         if: success()
         run: |
-          REPORT_URL="https://${{ github.repository_owner }}.gitverse.site/${{ github.event.repository.name }}/"
-          echo "Отчет успешно опубликован!"
-          echo "Открыть Allure: $REPORT_URL"
-          echo "Ссылка на отчет: $REPORT_URL"
+          $REPORT_URL = "https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"
+          Write-Output "Отчет успешно опубликован!"
+          Write-Output "Открыть Allure: $REPORT_URL"
+          Write-Output "Ссылка на отчет: $REPORT_URL"
