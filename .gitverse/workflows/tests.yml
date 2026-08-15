@@ -38,6 +38,13 @@ jobs:
         if: always()
         run: allure generate ./allure-results -o ./allure-report --clean
 
+      - name: 📤 Загрузка отчета в артефакты
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report
+          path: ./allure-report
+
       - name: 🚀 Публикация в GitVerse Pages (ветка gh-pages )
         if: always()
         env:
@@ -52,10 +59,10 @@ jobs:
           Copy-Item -Recurse /tmp/allure-report/* ./
           git add .
           git commit -m "Deploy Allure Report to Pages"
-          ls -la .
-          chown -R github:GitVerse CI .
           git push https://${{ secrets.SECRET_TOKEN }}@gitverse.ru/Kirill-Kamyshanov/memes gh-pages --force-with-lease
 #          git push https://${{ secrets.SECRET_TOKEN }}@gitverse.ru/Kirill-Kamyshanov/memes gh-pages --force
+        with:
+          github_token: ${{ secrets.SECRET_TOKEN }}
 
       - name: 🔗 Ссылка на Allure Отчет
         if: always()
