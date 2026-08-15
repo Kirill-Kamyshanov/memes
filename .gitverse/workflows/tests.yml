@@ -64,7 +64,7 @@ jobs:
       - name: 🚀 Публикация в GitVerse Pages (ветка gh-pages )
         if: always()
         env:
-          GIT_AUTH_TOKEN: ${{ secrets.SECRET_TOKEN }}
+          TOKEN: ${{ secrets.SECRET_TOKEN }}
         with:
           TOKEN: ${{ secrets.SECRET_TOKEN }}
         run: |
@@ -77,7 +77,7 @@ jobs:
           Copy-Item -Recurse /tmp/allure-report/* ./
           git add .
           git commit -m "Deploy Allure Report to Pages"
-          git push https://${{ secrets.SECRET_TOKEN }}@gitverse.ru/Kirill-Kamyshanov/memes gh-pages --force
+          git push https://$env:TOKEN@gitverse.ru/Kirill-Kamyshanov/memes gh-pages --force
 
 
       - name: 🔗 Ссылка на Allure Отчет
