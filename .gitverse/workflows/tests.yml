@@ -40,6 +40,8 @@ jobs:
 
       - name: 🚀 Публикация в GitVerse Pages (ветка gh-pages )
         if: always()
+        env:
+          GIT_AUTH_TOKEN: ${{ secrets.SECRET_TOKEN }}
         run: |
           Remove-Item -Recurse -Force /tmp/allure-report
           Copy-Item -Recurse ./allure-report /tmp/allure-report
