@@ -34,11 +34,11 @@ jobs:
         env:
           TOKEN: ${{ secrets.TOKEN }}
 
-      - name: 📊 Генерация Allure HTML
-        if: always()
-        run: |
-#          Убедись, что на компьютере, где запущен раннер, установлен Allure CLI
-          allure generate ./allure-results -o ./allure-report --clean
+#      - name: 📊 Генерация Allure HTML
+#        if: always()
+#        run: |
+##          Убедись, что на компьютере, где запущен раннер, установлен Allure CLI
+#          allure generate ./allure-results -o ./allure-report --clean
 #
 #      # ниже проверит ь
 #      - name: 🚀 Публикация в GitVerse Pages (ветка gh-pages)
