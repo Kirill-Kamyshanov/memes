@@ -46,11 +46,11 @@ jobs:
           git config --global user.name "GitVerse CI"
           git config --global user.email "ci@gitverse.ru"
           git checkout -B gh-pages
-#          Get-ChildItem -Exclude .git | Remove-Item -Recurse -Force
-#          Copy-Item -Recurse /tmp/allure-report/* ./
-#          git add .
-#          git commit -m "Deploy Allure Report to Pages"
-#          git push origin gh-pages --force
+          Get-ChildItem -Exclude .git | Remove-Item -Recurse -Force
+          Copy-Item -Recurse /tmp/allure-report/* ./
+          git add .
+          git commit -m "Deploy Allure Report to Pages"
+          git push origin gh-pages --force
 
 #      - name: 🔗 Ссылка на Allure Отчет
 #        if: always()
