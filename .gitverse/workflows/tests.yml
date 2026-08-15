@@ -56,7 +56,7 @@ jobs:
       # 3. Загружаем артефакт в Pages
       - name: 📤 Загрузка в GitVerse Pages
         if: always()
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v1
         with:
           path: ./pages-artifact
 
