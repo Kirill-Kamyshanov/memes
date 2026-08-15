@@ -61,9 +61,40 @@ jobs:
           path: ./pages-artifact
 
       # 4. Публикуем на GitVerse Pages
-      - name: 🚀 Публикация на GitVerse Pages
+      - name: 🚀 Публикация в GitVerse Pages (ветка gh-pages)
         if: always()
-        uses: actions/deploy-pages@v4
+        env:
+          GIT_AUTH_TOKEN: ${{ secrets.SECRET_TOKEN }}
+        run: |
+          # 1. Удаляем старый временный отчет
+          rm -rf /tmp/allure-report
+
+          # 2. Копируем отчет во временную папку
+          cp -r ./allure-report /tmp/allure-report
+
+          # 3. Настраиваем Git
+          git config --global user.name "GitVerse CI"
+          git config --global user.email "ci@gitverse.ru"
+
+          # 4. Скачиваем последнее состояние удалённой ветки gh-pages
+          git fetch origin gh-pages || echo "Ветка gh-pages не существует на удалённом репозитории"
+
+          # 5. Переключаемся на ветку gh-pages (создаём, если нет)
+          git checkout -B gh-pages
+
+          # 6. Сливаем изменения с удалённой веткой (если есть)
+          git merge origin/gh-pages --allow-unrelated-histories -m "Merge remote gh-pages" || echo "Нет изменений для слияния"
+
+          # 7. Удаляем все файлы в корне, кроме .git
+          find . -maxdepth 1 ! -name '.git' ! -name '.' -exec rm -rf {} +
+
+          # 8. Копируем отчет в корень
+          cp -r /tmp/allure-report/* .
+
+          # 9. Добавляем, коммитим и пушим
+          git add .
+          git commit -m "Deploy Allure Report to Pages" || echo "Nothing to commit"
+          git push https://${{ secrets.SECRET_TOKEN }}@gitverse.ru/Kirill-Kamyshanov/memes gh-pages --force
 
 
 #      - name: 🚀 Публикация в GitVerse Pages (ветка gh-pages )
@@ -86,7 +117,7 @@ jobs:
 #          github_token: ${{ secrets.SECRET_TOKEN }}
 
       - name: 🔗 Ссылка на Allure Отчет
-        if: always()
+        if: success()
         run: |
           REPORT_URL="https://${{ github.repository_owner }}.gitverse.site/${{ github.event.repository.name }}/"
           echo "Отчет успешно опубликован!"
