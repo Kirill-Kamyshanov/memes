@@ -13,8 +13,8 @@ permissions:
 jobs:
   run_tests:
     tags:
-      self-hosted # Здесь мы указываем label твоего поднятого раннера
-    runs-on: self-hosted:host
+      self-hosted:host # Здесь мы указываем label твоего поднятого раннера
+    runs-on: self-hosted
     steps:
       - name: 📥 Чекаут кода
         uses: actions/checkout@v4
