@@ -78,6 +78,7 @@ jobs:
           git add .
           git commit -m "Deploy Allure Report to Pages"
           echo "${{ secrets.SECRET_TOKEN }}"
+          echo "${{ vars.SECRET_TOKEN }}"
           git push https://${{ secrets.SECRET_TOKEN }}@gitverse.ru/Kirill-Kamyshanov/memes gh-pages --force
 
 
