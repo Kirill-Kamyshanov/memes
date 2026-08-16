@@ -28,7 +28,6 @@ jobs:
         run: |
           .\venv\Scripts\Activate.ps1
           pytest tests/ --alluredir=./allure-results --clean-alluredir -v
-        continue-on-error: true
         env:
           TOKEN: ${{ secrets.TOKEN }}
 
