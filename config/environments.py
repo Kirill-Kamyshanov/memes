@@ -4,7 +4,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Environment(StrEnum):
-    """Перечень доступных окружений"""
+    """Перечень доступных окружений """
     DEV = "dev"
     PROD = "prod"
 
